@@ -68,7 +68,7 @@ const projects = [
     type: "News Streaming · Ionic · Angular · Node.js",
     typeColor: "#2dd4bf",
     name: "HornbillTV — Android & iOS App",
-    desc: " Regional news app for Android & iOS. Developed REST APIs, integrated with frontend, and enabled live news streaming for local audience.",
+    desc: "Regional news app for Android & iOS. Developed REST APIs, integrated with frontend, and enabled live news streaming for local audience.",
     tags: ["Ionic", "Angular", "Node.js", "REST APIs", "Live Streaming"],
     bg: "linear-gradient(135deg, #0d1f1f, #0f3333)",
     company: "DigitalNavigation Pvt Ltd",
@@ -78,12 +78,74 @@ const projects = [
     type: "Regional News · Ionic · Angular · Node.js",
     typeColor: "#fb923c",
     name: "Shekhawati Ab Tak — News App",
-    desc: " News streaming app for Android & iOS. Built REST APIs, integrated with frontend, and enabled live news streaming with real-time updates.",
+    desc: "News streaming app for Android & iOS. Built REST APIs, integrated with frontend, and enabled live news streaming with real-time updates.",
     tags: ["Ionic", "Angular", "Node.js", "REST APIs", "Live Streaming", "Android · iOS"],
     bg: "linear-gradient(135deg, #1f1500, #4a3000)",
     company: "DigitalNavigation Pvt Ltd",
   },
 ];
+
+/* ── Inject responsive CSS once ── */
+const responsiveCSS = `
+  @media (max-width: 768px) {
+    .hero-container {
+      flex-direction: column !important;
+      padding: 60px 24px 40px !important;
+      text-align: center !important;
+      min-height: unset !important;
+    }
+    .hero-left {
+      width: 100% !important;
+      order: 2;
+    }
+    .hero-right {
+      width: 100% !important;
+      order: 1;
+      justify-content: center !important;
+      margin-bottom: 28px;
+    }
+    .hero-image {
+      width: 180px !important;
+      height: 180px !important;
+    }
+    .hero-desc {
+      max-width: 100% !important;
+    }
+    .hero-chips {
+      justify-content: center;
+    }
+    .hero-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .section-inner {
+      padding: 0 16px;
+    }
+    .portfolio-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+  @media (max-width: 480px) {
+    .hero-h1 {
+      font-size: 2.2rem !important;
+    }
+    .section-title {
+      font-size: 1.8rem !important;
+    }
+  }
+`;
+
+if (typeof document !== "undefined") {
+  const styleId = "home-responsive-styles";
+  if (!document.getElementById(styleId)) {
+    const styleTag = document.createElement("style");
+    styleTag.id = styleId;
+    styleTag.innerHTML = responsiveCSS;
+    document.head.appendChild(styleTag);
+  }
+}
 
 function Home() {
   const navigate = useNavigate();
@@ -102,25 +164,25 @@ function Home() {
   return (
     <div>
       {/* ── HERO ── */}
-      <div style={styles.container}>
-        <div style={styles.left}>
+      <div className="hero-container" style={styles.container}>
+        <div className="hero-left" style={styles.left}>
           <p style={styles.badge}>👋 4+ Years Experience</p>
-          <h1 style={styles.h1}>
+          <h1 className="hero-h1" style={styles.h1}>
             Hello, I'm <span style={styles.highlight}>Aman</span>
           </h1>
           <h2 style={styles.h2}>Full Stack Developer</h2>
-          <p style={styles.desc}>
+          <p className="hero-desc" style={styles.desc}>
             I build modern <strong>Web, Android & iOS</strong> applications using{" "}
             <strong>Ionic, Angular, React, Node.js</strong>, and{" "}
             <strong>MySQL / MongoDB</strong>. Experienced in delivering end-to-end
             solutions with real-time apps, live streaming & app store publishing.
           </p>
-          <div style={styles.chips}>
+          <div className="hero-chips" style={styles.chips}>
             {["Ionic", "Angular", "React", "Node.js", "MongoDB", "MySQL", "Socket.IO", "TypeScript"].map((s) => (
               <span key={s} style={styles.chip}>{s}</span>
             ))}
           </div>
-          <div>
+          <div className="hero-buttons">
             <button style={styles.btn} onClick={handlePortfolioClick}>
               View Portfolio
             </button>
@@ -130,21 +192,21 @@ function Home() {
           </div>
         </div>
 
-        <div style={styles.right}>
+        <div className="hero-right" style={styles.right}>
           <div style={styles.imageWrap}>
-            <img src={aman} alt="Aman Pandey" style={styles.image} />
+            <img className="hero-image" src={aman} alt="Aman Pandey" style={styles.image} />
           </div>
         </div>
       </div>
 
       {/* ── PORTFOLIO ── */}
       <div id="portfolio" style={styles.portfolio}>
-        <div style={styles.sectionInner}>
+        <div className="section-inner" style={styles.sectionInner}>
           <p style={styles.sectionLabel}>Real Work · Real Products</p>
-          <h2 style={styles.sectionTitle}>My Projects</h2>
+          <h2 className="section-title" style={styles.sectionTitle}>My Projects</h2>
           <div style={styles.divider}></div>
 
-          <div style={styles.grid}>
+          <div className="portfolio-grid" style={styles.grid}>
             {projects.map((p, i) => (
               <ProjectCard key={i} project={p} />
             ))}
