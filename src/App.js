@@ -4,7 +4,7 @@ import Header from "./component/header";
 import Home from "./component/home";
 import Footer from "./component/footer";
 
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route,Navigate  } from "react-router-dom";
 import Contact from "./component/Contact";
 
 function App() {
@@ -19,6 +19,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home/>}/>
             <Route path="/contact" element={<Contact/>}/>
+             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>
 
