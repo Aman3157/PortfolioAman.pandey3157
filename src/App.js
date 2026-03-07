@@ -1,33 +1,29 @@
 import React from "react";
-import './App.css';
-import Header from "./component/header";
-import Home from "./component/home";
-import Footer from "./component/footer";
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 
-import { BrowserRouter, Routes, Route,Navigate  } from "react-router-dom";
+import './App.css';
+import Header from "./component/Header";
+import Home from "./component/Home";
 import Contact from "./component/Contact";
+import Footer from "./component/footer";
 
 function App() {
   return (
-    <BrowserRouter>
-
+    <HashRouter>
       <div className="app-container">
+        <Header />
 
-        <Header/>
-
-        <div className="content">
+        <main className="main-content">
           <Routes>
-            <Route path="/" element={<Home/>}/>
-            <Route path="/contact" element={<Contact/>}/>
-             <Route path="*" element={<Navigate to="/" />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="*" element={<Navigate to="/" />} />
           </Routes>
-        </div>
+        </main>
 
-        <Footer/>
-
+        <Footer />
       </div>
-
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
