@@ -1,3 +1,4 @@
-# https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+Allow: /
+
+Sitemap: https://aman3157.github.io/PortfolioAman.pandey3157/sitemap.xml
