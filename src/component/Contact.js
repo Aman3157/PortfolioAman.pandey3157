@@ -1,6 +1,30 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
+
+import { getUsers } from "../services/userService";
 
 function Contact() {
+   const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+  useEffect(() => {
+  console.log("Users State:", users);
+}, [users]);
+
+  const fetchUsers = async () => {
+    try {
+      const res = await getUsers();
+      console.log("API Response:", res);       // full response
+      console.log("Users Data:", res.data); 
+
+      setUsers(res.data);
+      console.log(users);
+      
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [sent, setSent] = useState(false);
 
@@ -528,7 +552,33 @@ function Contact() {
             </div>
           </div>
         </div>
+         <h3 style={{color:"#fff", marginTop:"40px"}}>Users List</h3>
+
+<table style={{width:"100%", borderCollapse:"collapse", color:"#fff"}}>
+  <thead>
+    <tr style={{background:"#16161f"}}>
+      <th style={{border:"1px solid #333", padding:"8px"}}>#</th>
+      <th style={{border:"1px solid #333", padding:"8px"}}>Name</th>
+      <th style={{border:"1px solid #333", padding:"8px"}}>Email</th>
+      <th style={{border:"1px solid #333", padding:"8px"}}>Mobile</th>
+      <th style={{border:"1px solid #333", padding:"8px"}}>userId</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {users.map((user, index) => (
+      <tr key={user._id}>
+        <td style={{border:"1px solid #333", padding:"8px"}}>{index + 1}</td>
+        <td style={{border:"1px solid #333", padding:"8px"}}>{user?.name}</td>
+        <td style={{border:"1px solid #333", padding:"8px"}}>{user?.email}</td>
+        <td style={{border:"1px solid #333", padding:"8px"}}>{user?.contactNo}</td>
+        <td style={{border:"1px solid #333", padding:"8px"}}>{user?.userId}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
       </div>
+  
     </>
   );
 }
