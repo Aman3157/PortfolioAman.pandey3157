@@ -11,4 +11,4 @@ export const getUsers = () => API.get("/users/getusers");
 export const createUser = (data) => API.post("/users", data);
 
 export const generateAIContent = (prompt) =>
-  API.post("/generate", { prompt });
+  API.post("/generateGemini", { prompt });
