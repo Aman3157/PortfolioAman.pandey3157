@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter , Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import './App.css';
 import Header from "./component/header";
@@ -11,7 +11,7 @@ import VideoStudio from "./component/video";
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <div className="app-container">
         <Header />
 
@@ -20,7 +20,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/contact" element={<Contact />} />
              <Route path="/about" element={<AboutPage />} />
-            {/* <Route path="/video" element={<VideoStudio />} /> */}
+            <Route path="/video" element={<VideoStudio />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>
@@ -28,7 +28,7 @@ function App() {
 
         <Footer message={'aman'} />
       </div>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
