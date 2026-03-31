@@ -50,6 +50,9 @@ function Header() {
   const navLinks = [
     { label: "Home", to: "/" },
     { label: "Contact", to: "/contact" },
+     { label: "About", to: "/about" },
+      { label: "Video Editor", to: "/video" },
+  
   ];
 
   return (
