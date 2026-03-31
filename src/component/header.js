@@ -51,7 +51,7 @@ function Header() {
     { label: "Home", to: "/" },
     { label: "Contact", to: "/contact" },
      { label: "About", to: "/about" },
-      { label: "Video Editor", to: "/video" },
+      // { label: "Video Editor", to: "/video" },
   
   ];
 
