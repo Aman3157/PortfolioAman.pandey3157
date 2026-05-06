@@ -7,7 +7,7 @@ import Home from "./component/home";
 import Contact from "./component/Contact";
 import Footer from "./component/footer";
 import AboutPage from "./component/about";
-import VideoStudio from "./component/video";
+// import VideoStudio from "./component/video";
 
 function App() {
   return (
