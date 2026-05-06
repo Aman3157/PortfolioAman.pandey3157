@@ -6,8 +6,8 @@ function Contact() {
    const [users, setUsers] = useState([]);
 
   useEffect(() => {
-  fetchUsers();
-}, [fetchUsers]);
+    fetchUsers();
+  }, []);
   useEffect(() => {
   console.log("Users State:", users);
 }, [users]);
