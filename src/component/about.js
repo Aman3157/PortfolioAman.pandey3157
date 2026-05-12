@@ -12,7 +12,7 @@ const data = {
   stats: [
     { num: 4, suffix: "+", label: "Years of Experience" },
     { num: 10, suffix: "+", label: "Projects Delivered" },
-    { num: 2, suffix: "", label: "Platforms (iOS & Android)" },
+    { num: 2, suffix: "", label: "Platforms (Browser,iOS & Android)" },
   ],
   skills: [
     "Ionic Framework", "Angular", "TypeScript", "JavaScript",
