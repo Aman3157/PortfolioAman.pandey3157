@@ -1,5 +1,5 @@
 import React from "react";
-import aman from "../assets/aman.jpeg";
+import aman from "../assets/aman-formal.jpg";
 import { useNavigate } from "react-router-dom";
 
 const projects = [
