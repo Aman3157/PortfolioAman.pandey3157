@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
+import amanFace from "../assets/aman-face.jpg";
 
 const data = {
   name: "Aman Pandey",
@@ -71,226 +72,25 @@ function useFadeIn() {
   return [ref, visible];
 }
 
-/* ── Video Recorder Component ── */
-function VideoSection() {
-  const [mode, setMode] = useState("idle"); // idle | record | preview | embed | uploaded
-  const [stream, setStream] = useState(null);
-  const [mediaRecorder, setMediaRecorder] = useState(null);
-  const [recording, setRecording] = useState(false);
-  const [recordedBlob, setRecordedBlob] = useState(null);
-  const [recordedUrl, setRecordedUrl] = useState(null);
-  const [embedLink, setEmbedLink] = useState("");
-  const [embedUrl, setEmbedUrl] = useState(null);
-  const [timer, setTimer] = useState(0);
-  const [uploadedLocalUrl, setUploadedLocalUrl] = useState(null);
-  const liveRef = useRef(null);
-  const chunksRef = useRef([]);
-  const timerRef = useRef(null);
+/* ── Introduction Video ── */
+const INTRO_VIDEO = `${process.env.PUBLIC_URL}/aman-intro.mp4`;
+const INTRO_POSTER = `${process.env.PUBLIC_URL}/aman-intro-poster.jpg`;
 
-  const stopStream = useCallback(() => {
-    if (stream) stream.getTracks().forEach(t => t.stop());
-    setStream(null);
-    clearInterval(timerRef.current);
-  }, [stream]);
-
-  // Start webcam
-  const startCamera = async () => {
-    try {
-      const s = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      setStream(s);
-      setMode("record");
-      setTimer(0);
-      setTimeout(() => {
-        if (liveRef.current) { liveRef.current.srcObject = s; liveRef.current.play(); }
-      }, 100);
-    } catch {
-      alert("Camera/mic permission denied. Please allow access.");
-    }
-  };
-
-  const startRecording = () => {
-    chunksRef.current = [];
-    const mr = new MediaRecorder(stream, { mimeType: "video/webm" });
-    mr.ondataavailable = e => { if (e.data.size > 0) chunksRef.current.push(e.data); };
-    mr.onstop = () => {
-      const blob = new Blob(chunksRef.current, { type: "video/webm" });
-      const url = URL.createObjectURL(blob);
-      setRecordedBlob(blob);
-      setRecordedUrl(url);
-      setMode("preview");
-      stopStream();
-    };
-    mr.start();
-    setMediaRecorder(mr);
-    setRecording(true);
-    timerRef.current = setInterval(() => setTimer(t => t + 1), 1000);
-  };
-
-  const stopRecording = () => {
-    mediaRecorder.stop();
-    setRecording(false);
-    clearInterval(timerRef.current);
-  };
-
-  const downloadVideo = () => {
-    const a = document.createElement("a");
-    a.href = recordedUrl;
-    a.download = "aman-pandey-intro.webm";
-    a.click();
-  };
-
-  // File upload handler
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const url = URL.createObjectURL(file);
-    setUploadedLocalUrl(url);
-    setMode("uploaded");
-  };
-
-  // Embed YouTube/Drive
-  const handleEmbed = () => {
-    let url = embedLink.trim();
-    // Convert YouTube watch URL to embed
-    if (url.includes("youtube.com/watch?v=")) {
-      const id = url.split("v=")[1].split("&")[0];
-      url = `https://www.youtube.com/embed/${id}`;
-    } else if (url.includes("youtu.be/")) {
-      const id = url.split("youtu.be/")[1].split("?")[0];
-      url = `https://www.youtube.com/embed/${id}`;
-    } else if (url.includes("drive.google.com/file/d/")) {
-      const id = url.match(/\/d\/([^/]+)/)?.[1];
-      if (id) url = `https://drive.google.com/file/d/${id}/preview`;
-    }
-    setEmbedUrl(url);
-    setMode("embed");
-  };
-
-  const fmt = s => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
-
+function IntroVideo() {
   return (
-    <div>
-      {/* ── IDLE STATE ── */}
-      {mode === "idle" && (
-        <div style={vs.idleBox}>
-          <div style={vs.idleTitle}>🎬 Add Your Introduction Video</div>
-          <div style={vs.idleOptions}>
-
-            {/* Option 1: Record */}
-            <div style={vs.optCard} onClick={startCamera}>
-              <div style={vs.optIcon}>📹</div>
-              <div style={vs.optLabel}>Record with Webcam</div>
-              <div style={vs.optSub}>Use your camera & mic directly in browser</div>
-            </div>
-
-            {/* Option 2: Upload file */}
-            <label style={vs.optCard}>
-              <div style={vs.optIcon}>📁</div>
-              <div style={vs.optLabel}>Upload Video File</div>
-              <div style={vs.optSub}>MP4, MOV, WebM — from phone or camera</div>
-              <input type="file" accept="video/*" style={{ display: "none" }} onChange={handleFileUpload} />
-            </label>
-
-            {/* Option 3: Embed link */}
-            <div style={vs.optCard} onClick={() => setMode("embedInput")}>
-              <div style={vs.optIcon}>🔗</div>
-              <div style={vs.optLabel}>Embed YouTube / Drive</div>
-              <div style={vs.optSub}>Paste your YouTube or Google Drive link</div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── EMBED INPUT ── */}
-      {mode === "embedInput" && (
-        <div style={vs.embedBox}>
-          <div style={vs.embedTitle}>🔗 Paste Video Link</div>
-          <div style={vs.embedHint}>YouTube link ya Google Drive sharable link paste karo</div>
-          <input
-            style={vs.embedInput}
-            placeholder="https://youtube.com/watch?v=... or https://drive.google.com/..."
-            value={embedLink}
-            onChange={e => setEmbedLink(e.target.value)}
-          />
-          <div style={vs.embedBtns}>
-            <button style={vs.btnPrimary} onClick={handleEmbed} disabled={!embedLink.trim()}>✅ Embed Video</button>
-            <button style={vs.btnOutline} onClick={() => setMode("idle")}>← Back</button>
-          </div>
-          <div style={vs.embedSteps}>
-            <strong>YouTube se kaise link lein:</strong><br />
-            1. YouTube pe video open karo → Share → Copy Link<br /><br />
-            <strong>Google Drive se kaise link lein:</strong><br />
-            1. Drive pe video upload karo<br />
-            2. Right click → Share → "Anyone with the link" set karo<br />
-            3. Copy link karo aur yahan paste karo
-          </div>
-        </div>
-      )}
-
-      {/* ── LIVE CAMERA / RECORDING ── */}
-      {mode === "record" && (
-        <div style={vs.recordBox}>
-          <video ref={liveRef} muted autoPlay playsInline style={vs.video} />
-          <div style={vs.recControls}>
-            {!recording ? (
-              <button style={vs.btnRecord} onClick={startRecording}>🔴 Start Recording</button>
-            ) : (
-              <>
-                <div style={vs.recTimer}>🔴 {fmt(timer)} — Recording...</div>
-                <button style={vs.btnStop} onClick={stopRecording}>⏹ Stop</button>
-              </>
-            )}
-            <button style={vs.btnOutline} onClick={() => { stopStream(); setMode("idle"); }}>✕ Cancel</button>
-          </div>
-          <div style={vs.scriptMini}>
-            💡 Script: "Hello! My name is Aman Pandey and I am a Full Stack Developer with over 4 years of experience in cross-platform mobile and web development.I specialize in Ionic Angular, TypeScript, Node.js, and Socket.IO. Currently, I am working as a Software Engineer at Healaxy Software India Pvt Ltd, Noida, building healthcare SaaS products including the We Nourish You dietitian management system. I enjoy building complete end-to-end solutions — from designing the frontend to developing the backend and publishing apps on both Android and iOS platforms.Some of my key projects include We Nourish You, a clinical nutrition platform for dietitians; Kanteeno, a food delivery and live kitchen streaming app; Healaxy, a comprehensive hospital management system with modules like appointments, billing, and pharmacy; and the Jai Maharashtra News App, which features live news streaming.I have successfully published multiple apps on both the App Store and Google Play Store, and I am very comfortable working with real-time features using Socket.IO.I am a collaborative team player who works closely with designers, backend developers, and clients to deliver quality solutions on time.If you are looking for a dedicated developer who can work independently, communicate effectively, and deliver clean results — I am ready to contribute to your team.You can reach me at pandeyaman3157@gmail.com or connect with me on LinkedIn. Thank you!"
-          </div>
-        </div>
-      )}
-
-      {/* ── PREVIEW RECORDED ── */}
-      {mode === "preview" && (
-        <div style={vs.previewBox}>
-          <video src={recordedUrl} controls style={vs.video} />
-          <div style={vs.previewBtns}>
-            <button style={vs.btnPrimary} onClick={downloadVideo}>⬇ Download Video</button>
-            <button style={vs.btnOutline} onClick={() => { setMode("record"); startCamera(); }}>🔄 Re-record</button>
-            <button style={vs.btnOutline} onClick={() => setMode("idle")}>✕ Cancel</button>
-          </div>
-          <div style={vs.downloadNote}>
-            ✅ Video download karke YouTube ya Google Drive pe upload karo, phir "Embed" option se link paste karo.
-          </div>
-        </div>
-      )}
-
-      {/* ── UPLOADED LOCAL FILE ── */}
-      {mode === "uploaded" && (
-        <div style={vs.previewBox}>
-          <video src={uploadedLocalUrl} controls style={vs.video} />
-          <div style={vs.previewBtns}>
-            <button style={vs.btnOutline} onClick={() => setMode("idle")}>🔄 Change Video</button>
-          </div>
-          <div style={vs.downloadNote}>
-            ℹ️ Yeh video sirf is session mein dikhegi. Permanent ke liye YouTube/Drive pe upload karo aur Embed karo.
-          </div>
-        </div>
-      )}
-
-      {/* ── EMBEDDED VIDEO ── */}
-      {mode === "embed" && (
-        <div style={vs.previewBox}>
-          <iframe
-            src={embedUrl}
-            style={{ ...vs.video, border: "none", borderRadius: 12 }}
-            allow="autoplay; fullscreen"
-            allowFullScreen
-            title="Introduction Video"
-          />
-          <div style={vs.previewBtns}>
-            <button style={vs.btnOutline} onClick={() => { setEmbedUrl(null); setEmbedLink(""); setMode("idle"); }}>🔄 Change Video</button>
-          </div>
-        </div>
-      )}
+    <div style={iv.wrap}>
+      <video
+        src={INTRO_VIDEO}
+        poster={INTRO_POSTER}
+        controls
+        playsInline
+        preload="metadata"
+        style={iv.video}
+        title="Aman Pandey — Introduction Video"
+      />
+      <div style={iv.caption}>
+        <span style={iv.dot} /> 33 sec intro · Software Engineer @ Healaxy Software India Pvt Ltd
+      </div>
     </div>
   );
 }
@@ -372,7 +172,7 @@ export default function AboutPage() {
         {/* HERO */}
         <div style={styles.hero}>
           <div style={{ ...styles.avatarRing, boxShadow: pulsing ? "0 0 0 0 rgba(0,229,255,0.5), 0 0 40px rgba(124,77,255,0.3)" : "0 0 0 14px rgba(0,229,255,0), 0 0 60px rgba(124,77,255,0.5)", transition: "box-shadow 1.5s ease" }}>
-            <div style={styles.avatarInner}>AP</div>
+            <img src={amanFace} alt="Aman Pandey" style={styles.avatarImg} />
           </div>
           <div style={styles.roleBadge}>Full Stack · Mobile · Web Developer</div>
           <h1 style={styles.heroName}>Aman <span style={styles.heroNameAccent}>Pandey</span></h1>
@@ -413,7 +213,7 @@ export default function AboutPage() {
                 </div>
               </div>
               <SectionLabel>Video Introduction</SectionLabel>
-              <VideoSection />
+              <IntroVideo />
             </FadeSection>
           )}
 
@@ -490,38 +290,12 @@ export default function AboutPage() {
   );
 }
 
-/* ── Video Styles ── */
-const vs = {
-  idleBox: { background: "#1a1a26", border: "1px solid rgba(0,229,255,0.15)", borderRadius: 16, padding: 28, marginBottom: 20 },
-  idleTitle: { fontSize: 16, fontWeight: 700, marginBottom: 20, textAlign: "center", fontFamily: "Syne, sans-serif" },
-  idleOptions: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 14 },
-  optCard: {
-    background: "#12121a", border: "1px solid rgba(0,229,255,0.15)", borderRadius: 12,
-    padding: 20, textAlign: "center", cursor: "pointer",
-    transition: "all 0.2s", display: "block",
-    ":hover": { borderColor: "#00e5ff" }
-  },
-  optIcon: { fontSize: 28, marginBottom: 10 },
-  optLabel: { fontSize: 14, fontWeight: 700, marginBottom: 6, fontFamily: "Syne, sans-serif" },
-  optSub: { fontSize: 12, color: "#7a7a9a", lineHeight: 1.5 },
-  recordBox: { background: "#1a1a26", border: "1px solid rgba(0,229,255,0.15)", borderRadius: 16, padding: 20, marginBottom: 20 },
-  previewBox: { background: "#1a1a26", border: "1px solid rgba(0,229,255,0.15)", borderRadius: 16, padding: 20, marginBottom: 20 },
-  video: { width: "100%", borderRadius: 10, marginBottom: 16, aspectRatio: "16/9", background: "#000", display: "block" },
-  recControls: { display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap", marginBottom: 14 },
-  recTimer: { fontSize: 18, fontWeight: 700, color: "#ff4444", fontFamily: "Syne, sans-serif" },
-  btnRecord: { padding: "10px 24px", borderRadius: 8, background: "#ff4444", color: "#fff", border: "none", cursor: "pointer", fontSize: 14, fontWeight: 700 },
-  btnStop: { padding: "10px 24px", borderRadius: 8, background: "#ff8800", color: "#fff", border: "none", cursor: "pointer", fontSize: 14, fontWeight: 700 },
-  btnPrimary: { padding: "10px 22px", borderRadius: 8, background: "linear-gradient(135deg,#00e5ff,#7c4dff)", color: "#0a0a0f", border: "none", cursor: "pointer", fontSize: 14, fontWeight: 700, textDecoration: "none" },
-  btnOutline: { padding: "10px 22px", borderRadius: 8, background: "transparent", color: "#e8e8f0", border: "1px solid rgba(0,229,255,0.3)", cursor: "pointer", fontSize: 14, textDecoration: "none" },
-  previewBtns: { display: "flex", gap: 12, flexWrap: "wrap" },
-  downloadNote: { fontSize: 12, color: "#7a7a9a", marginTop: 12, lineHeight: 1.6, background: "rgba(0,229,255,0.05)", padding: "10px 14px", borderRadius: 8 },
-  scriptMini: { fontSize: 12, color: "#7a7a9a", lineHeight: 1.8, borderLeft: "3px solid rgba(0,229,255,0.3)", paddingLeft: 12, marginTop: 4 },
-  embedBox: { background: "#1a1a26", border: "1px solid rgba(0,229,255,0.15)", borderRadius: 16, padding: 28, marginBottom: 20 },
-  embedTitle: { fontSize: 16, fontWeight: 700, marginBottom: 8, fontFamily: "Syne, sans-serif" },
-  embedHint: { fontSize: 13, color: "#7a7a9a", marginBottom: 14 },
-  embedInput: { width: "100%", background: "#0a0a0f", border: "1px solid rgba(0,229,255,0.2)", borderRadius: 8, padding: "10px 14px", color: "#e8e8f0", fontSize: 13, marginBottom: 14, boxSizing: "border-box" },
-  embedBtns: { display: "flex", gap: 12, marginBottom: 16 },
-  embedSteps: { fontSize: 12, color: "#7a7a9a", lineHeight: 2, background: "rgba(124,77,255,0.07)", padding: "14px 16px", borderRadius: 8 },
+/* ── Intro Video Styles ── */
+const iv = {
+  wrap: { background: "#1a1a26", border: "1px solid rgba(0,229,255,0.15)", borderRadius: 16, padding: 14, marginBottom: 20 },
+  video: { width: "100%", aspectRatio: "16/9", borderRadius: 10, background: "#000", display: "block" },
+  caption: { display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "#7a7a9a", marginTop: 12, paddingLeft: 4 },
+  dot: { width: 6, height: 6, borderRadius: "50%", background: "#00e5ff", display: "inline-block" },
 };
 
 /* ── Main Styles ── */
@@ -532,6 +306,7 @@ const styles = {
   container: { maxWidth: 860, margin: "0 auto", padding: "40px 24px 80px", position: "relative", zIndex: 1 },
   hero: { textAlign: "center", padding: "60px 0 40px" },
   avatarRing: { width: 110, height: 110, borderRadius: "50%", background: "linear-gradient(135deg,#00e5ff,#7c4dff)", padding: 3, margin: "0 auto 24px" },
+  avatarImg: { width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover", display: "block", background: "#1a1a26" },
   avatarInner: { width: "100%", height: "100%", borderRadius: "50%", background: "#1a1a26", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, fontWeight: 800, color: "#00e5ff", fontFamily: "Syne,sans-serif" },
   roleBadge: { display: "inline-block", fontSize: 12, letterSpacing: 3, textTransform: "uppercase", color: "#7a7a9a", marginBottom: 10 },
   heroName: { fontSize: "clamp(34px,6vw,54px)", fontWeight: 800, letterSpacing: -1, lineHeight: 1, marginBottom: 12, fontFamily: "Syne,sans-serif" },
