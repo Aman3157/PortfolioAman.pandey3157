@@ -4,6 +4,16 @@ import { useNavigate } from "react-router-dom";
 
 const projects = [
   {
+    emoji: "🥗",
+    type: "HealthTech · Angular · Node.js · Chart.js",
+    typeColor: "#34d399",
+    name: "We Nourish You — Dietitian Management System",
+    desc: "Clinical nutrition platform for dietitians. Multi-step patient intake wizard (vitals, anthropometrics, blood biomarkers, allergies), PG-SGA / MUST / SARC-F screening, WHO/CDC growth charts, pediatric visit management, and a meal-planning workspace with IFCT food database & allergen conflict detection.",
+    tags: ["Angular", "Node.js", "Chart.js", "RxJS", "REST APIs", "Admin Dashboard"],
+    bg: "linear-gradient(135deg, #0b1f14, #14532d)",
+    company: "Healaxy Software India Pvt Ltd",
+  },
+  {
     emoji: "🍽️",
     type: "Food Tech · Ionic · Angular · Node.js · MongoDB",
     typeColor: "#43e97b",
