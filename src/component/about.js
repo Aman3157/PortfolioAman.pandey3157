@@ -21,6 +21,7 @@ const data = {
     "Socket.IO", "REST APIs", "MySQL", "HTML & CSS",
     "Bootstrap", "jQuery", "iOS Publishing", "Android Publishing",
     "Git", "Postman", "Swagger",
+    "Claude AI", "ChatGPT", "Gemini", "AI API Integration",
   ],
   projects: [
     { tag: "Web · HealthTech", name: "We Nourish You", desc: "Dietitian management system with multi-step nutrition intake wizard, PG-SGA / MUST / SARC-F screening, WHO/CDC growth charts, and meal planning with allergen conflict detection." },
